@@ -19,6 +19,7 @@
       <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
       <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
       <button v-on:click='print'>点击</button>
+      <br>
     </p>
   </div>
 </template>
@@ -33,9 +34,17 @@ export default ({
         this.$http.get('/book12/').then(function (response) {
           console.log(response)
         })
-    }
+    },
+    goList(){
+          this.$router.go(
+                  {
+                      name: "login"
+
+                  }
+          )
+      }
   },
-    components:
+  components:
    {
     Hello
   }

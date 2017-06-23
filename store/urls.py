@@ -19,4 +19,5 @@ from book.views import get_page
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^book12/', get_page),
+    url(r'^user/', include(store_user.urls)),
 ]

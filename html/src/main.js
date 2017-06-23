@@ -1,8 +1,10 @@
 import Vue from 'vue'
+import VueRouter from 'vue-router'
 import App from './App'
 import VueResource from 'vue-resource'
 
 Vue.use(VueResource)
+Vue.use(VueRouter)
 
 /* eslint-disable no-new */
 new Vue({
@@ -16,3 +18,12 @@ try {
   Vue.http.options.root = ''
   console.log('kkkkkk')
 }
+
+
+var router = new VueRouter({
+  hashbang: false,
+  history: true,
+  saveScrollPosition: true,
+  transitionOnLoad: true
+})
+

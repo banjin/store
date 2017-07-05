@@ -163,13 +163,63 @@ class Pizza(object):
         return self.size
 
 
+# ======= 解析csv文件 ========
+
+def parse_csv(filename):
+    """解析csv文件
+    :param filename: 
+    :return: 
+    """
+    import csv
+    with open(filename) as f:
+        f_csv = csv.reader(f)
+        headers = next(f_csv)
+        for row in f_csv:
+            print row[0].decode('gbk').encode('utf-8')
+
+def parse_execl(filename):
+    """
+    解析execl文件
+    :param filename: 
+    :return: 
+    """
+    import xlrd
+    book = xlrd.open_workbook(filename)  # 获取一个xlrd对象
+    print book.nsheets  # 获取所有的sheet个数
+    for sheet_index in range(book.nsheets):
+        print book.sheet_by_index(sheet_index)
+    print [i for i in book.sheet_names()]
+    sheet = book.sheet_by_index(0)  # 获取第一个sheet
+    print sheet
+    print sheet.name   # 获取sheet的名字
+    print sheet.ncols  # 获取sheet的列
+    print sheet.nrows  # 获取sheet的行
+    print sheet.cell(1, 2).value
+
+
+def upload_progress(offset, size):
+    """
+    获取上传进度
+    :param offset: 已经长传大小
+    :param size: 文件总的大小
+    :return: 
+    """
+    if size == 0:
+        print "upload process ... {0}".format("%5.1f%%" % (100 * 0))
+    else:
+        ratio = float(offset) / size
+        print "upload process ... {0}".format("%5.1f%%" % (100 * ratio))
+
 if __name__ == '__main__':
     # t_warps()
-    p = Pizza(55)
-    print Pizza.get_size(p)
-    print p.get_size()
+    # p = Pizza(55)
+    # print Pizza.get_size(p)
+    # print p.get_size()
 
-    A.fun3(A)
-    B.fun3()
+    # A.fun3(A)
+    # B.fun3()
+    #parse_csv('/Users/songhaiming/Downloads/servers_template.csv')
+    #parse_execl('/Users/songhaiming/Downloads/测试版本一.xlsx')
+    upload_progress(30,79)
 
-    
+

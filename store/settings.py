@@ -1,3 +1,4 @@
+# coding:utf-8
 """
 Django settings for store project.
 
@@ -107,3 +108,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+TMP_DIR = os.path.join('media','csv_template')
+
+# 存储上传临时文件
+EXECL_TMP_FILE_DIR = '/var/temp/temp/{0}'
+# 存储工作表对应的csv文件
+DATA_BASE_DIR = '/var/temp/bdpdata/{0}'

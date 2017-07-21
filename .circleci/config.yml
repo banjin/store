@@ -1,0 +1,17 @@
+machine:
+
+    python:
+        version: 2.7.6
+
+dependencies:
+    pre:
+        - pip install -U pip
+
+test:
+    override:
+        - ./test.sh
+
+notify:
+  webhooks:
+    # A list of hashes representing hooks. Only the url field is supported.
+    - url: https://hook.lesschat.com/circleci/6254d4312f2440e1a1767475b266d8eb

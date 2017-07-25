@@ -338,6 +338,30 @@ def handle_uploaded_file(f, file_url, model):
         for chunk in f.chunks():
             destination.write(chunk)
 
+def gg():
+    import csv
+    l = [['1', 'Wonderful Spam'], ['2', 'Lovely Spam']]
+    # 模拟数据写入一个csv
+    with open('eggs.csv', 'w') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in l:
+            spamwriter.writerow(row)
+    # 从文件读取
+    l = []
+    with open('eggs.csv') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in spamreader:
+            l = l + [row]
+            print l
+    # 把两列拼接增加为第三列写回到文件
+    with open('eggs1.csv', 'w') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in l:
+            print(row)
+            spamwriter.writerow(row + [row[0] + row[1]])
+
 if __name__ == '__main__':
     # t_warps()
     # p = Pizza(55)
@@ -357,4 +381,14 @@ if __name__ == '__main__':
     # md5sum('servers_template(1).csv')
     # import os
     # print os.stat('stocks6.xlsx').st_size
-    table_append('/Users/songhaiming/Downloads/servers_template.csv')
+    # table_append('/Users/songhaiming/Downloads/servers_template.csv')
+
+
+    # f = ['\xe6\x9c\x8d\xe5\x8a\xa1\xe5\x99\xa8\xe5\x90\x8d', 'IDC', 'SN\xe7\xbc\x96\xe5\x8f\xb7',
+    #      '\xe6\x9c\xba\xe6\x9f\x9c', '\xe7\x94\xa8\xe9\x80\x94', '\xe7\xb1\xbb\xe5\x9e\x8b',
+    #      '\xe5\x85\xac\xe7\xbd\x91IP\xe5\x9c\xb0\xe5\x9d\x80', '\xe5\x86\x85\xe7\xbd\x91IP\xe5\x9c\xb0\xe5\x9d\x80',
+    #      '\xe5\x8e\x82\xe5\x95\x86', '\xe5\x9e\x8b\xe5\x8f\xb7', 'U\xe6\x95\xb0']
+    # g = ','.join(f)
+    # print g
+
+    gg()

@@ -1,17 +1,20 @@
+# coding:utf-8
+
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
-
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 
 
+@csrf_exempt
 def my_view(request):
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(username=username, password=password)
     if user is not None:
         if user.is_active:
-            login(request, user)
-            response = HttpResponseRedirect(u"登录成功")
+            print login(request, user)
+            response = HttpResponse("success")
             response.set_cookie('username', user.username,
                                 max_age=60 * 60 * 24 * 7 * 52)
             response.set_cookie('user_id', user.id,

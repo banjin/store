@@ -15,9 +15,12 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from book.views import get_page
+from book import urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^book12/$', get_page),
+    url(r'^book/', include(urls)),
+    url(r'^user/', include('store_user.urls')),
     # url(r'^user/', include(store_user.urls)),
 ]

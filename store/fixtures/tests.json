@@ -1,0 +1,56 @@
+[
+{
+  "fields": {
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": true,
+    "is_staff": true,
+    "last_login": "2017-07-25T06:10:20.475Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$20000$OXXrBnrcKk3o$PdVb3HUNfTBEyQJRNSvABIDpDd7XlALpVNTxCtZW6Eo=",
+    "email": "baliang616@163.com",
+    "date_joined": "2017-04-24T15:53:30.426Z"
+  },
+  "model": "auth.user",
+  "pk": 1
+},
+{
+  "fields": {
+    "username": "songhaiming",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": true,
+    "is_staff": true,
+    "last_login": null,
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$20000$RUTDEYSghbft$loJb0FosV6WUeIcb70euXW07W4fZ+3bP2l1Lag8Cmos=",
+    "email": "baliang616@163.com",
+    "date_joined": "2017-07-18T04:58:28.337Z"
+  },
+  "model": "auth.user",
+  "pk": 2
+},
+{
+  "fields": {
+    "username": "john",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2017-07-25T06:13:37.784Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$20000$QEBeQZMKsKgI$E3bmurRVm5D9g8HxvOwWUHDe/bN6aKRBNY41ZihYeow=",
+    "email": "lennon@thebeatles.com",
+    "date_joined": "2017-07-25T06:12:10.989Z"
+  },
+  "model": "auth.user",
+  "pk": 3
+}
+]

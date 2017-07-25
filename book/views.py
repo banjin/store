@@ -10,7 +10,7 @@ import io
 import os
 import uuid
 from django.conf import settings
-from models import FileInfo
+from models import FileInfo, Question
 
 # Create your views here.
 """
@@ -59,15 +59,15 @@ def handle_uploaded_file(f):
 
 @csrf_exempt
 def get_page(request):
-    user = request.user
-    file_name = 'file_name_1.csv'
-    file_size = 12345
-    hash_str = '5eef0c399c75b1afbbafc5011be141f3' # 文件特征值
+    # user = request.user
+    file_name = 'file_name_2.csv'
+    file_size = 22000
+    hash_str = '5eef0c399c75b1afbbafc5011be141f2' # 文件特征值
     offset_size = 123
     # 暂时都是上传新的文件
     offset_size = 0
     DATA_BASE_DIR = '/var/temp/bdpdata/user_5'
-    file_folder = settings.EXECL_TMP_FILE_DIR.format("user_" + str(1))
+    file_folder = settings.EXECL_TMP_FILE_DIR.format("user_" + str(2))
     # 判断用户的磁盘大小
     # total_space = user.user_level.max_total_size
     # 暂时写个固定值
@@ -81,7 +81,7 @@ def get_page(request):
         }
         return return_data
     file = request.FILES.get('csv_file')
-    temp_file_path = settings.EXECL_TMP_FILE_DIR.format("user_" + str(1))
+    temp_file_path = settings.EXECL_TMP_FILE_DIR.format("user_" + str(2))
     if file_name.endswith('.csv'):
         csv_coding = 'gbk'
         try:
@@ -104,11 +104,14 @@ def get_page(request):
             "message": u"上传文件错误,文件格式错误",
         }
         return context
-    file_info = FileInfo.objects.create(hash_key=hash_str, user_id=1, file_status=3,
+    file_info = FileInfo.objects.create(hash_key=hash_str, user_id=2, file_status=3,
                                         file_name=file_name, file_total_size=file_size, file_curl_size=file_size)
-    store_file_name = str(uuid.uuid1()) + os.path.splitext(file_name)[1]
+
+    str_uuid = '_'.join(str(uuid.uuid1()).split('-'))
+    store_file_name = str_uuid + os.path.splitext(file_name)[1]
     file_info.file_name_uuid = store_file_name
     file_info.save()
+
     temp_file = os.path.join(temp_file_path, store_file_name)
     common.handle_uploaded_file(file, temp_file, 'wb+')
     # 最后还需要计算文件的MD5值
@@ -175,3 +178,20 @@ class _Upload(object):
             print "111111111111111"
             os.makedirs(self.file_folder)
         return True
+
+
+@csrf_exempt
+def create_question(request):
+    import datetime
+    """
+    提出问题
+    :param request: 
+    :return: 
+    """
+    if request.method == 'POST':
+        question_text = request.POST.get('question')
+    else:
+        question_text = "ask"
+    t = datetime.datetime.now()
+    Question.objects.create(question_text=question_text, pub_date=t)
+    return HttpResponse({"status": 0})

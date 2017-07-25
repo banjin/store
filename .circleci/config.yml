@@ -8,17 +8,25 @@ jobs:
         environment:
           MYSQL_DATABASE: circle_test
           MYSQL_USER: root
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_HOST: %
     steps:
       - checkout
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           command: |
+            sudo pip install virtualenv==15.1.0
+            python -m virtualenv venv
+            . venv/bin/activate
             pip install -r requirements.txt
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
       - run:
           command: |
+            . venv/bin/activate
             python manage.py test tests
       - store_artifacts:
           path: test-reports/

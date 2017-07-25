@@ -8,7 +8,7 @@ class QuestionTest(BaseTestCase):
     def test_question(self):
         self.url = '/book/question/'
         data = {
-            "question_text": "hhh",
+            "question": "hhh"
         }
         name_list = Question.objects.values_list('question_text')
         self.assertNotIn(data['question_text'], name_list)

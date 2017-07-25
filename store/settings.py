@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'book',
     'rest_framework',
     'store_user',
+    'store',
 )
 
 MIDDLEWARE_CLASSES = (

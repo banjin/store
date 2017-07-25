@@ -10,7 +10,7 @@ jobs:
           MYSQL_USER: root
           MYSQL_HOST: 127.0.0.1
           MYSQL_ROOT_HOST: "%"
-            MYSQL_ROOT_PASSWORD: '123456'
+          MYSQL_ROOT_PASSWORD: '123456'
     steps:
       - checkout
       - restore_cache:

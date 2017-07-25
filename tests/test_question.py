@@ -9,7 +9,6 @@ class QuestionTest(BaseTestCase):
         self.url = '/book/question/'
         data = {
             "question_text": "hhh",
-            "pub_date":datetime.datetime.now()
         }
         name_list = Question.objects.values_list('question_text')
         self.assertNotIn(data['question_text'], name_list)

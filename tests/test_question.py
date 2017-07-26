@@ -12,7 +12,8 @@ class QuestionTest(BaseTestCase):
         }
         name_list = Question.objects.values_list('question_text')
         self.assertNotIn(data['question'], name_list)
-        response = self.client.post(self.url, json.dumps(data), content_type='application/json')
+        response = self.client.post(self.url, json.dumps(data), content_type='application/json',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
         new_names = Question.objects.values('question_text')
         name_lists = [name['question_text'] for name in new_names]

@@ -8,6 +8,7 @@ import codecs
 import common
 import io
 import os
+import json
 import uuid
 from django.conf import settings
 from models import FileInfo, Question
@@ -189,7 +190,9 @@ def create_question(request):
     :return: 
     """
     if request.method == 'POST':
-        question_text = request.POST.get('question')
+        print "request.POST", request.body
+        content = json.loads(request.body)
+        question_text = content.get('question')
     else:
         question_text = "ask"
     t = datetime.datetime.now()

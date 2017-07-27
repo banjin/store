@@ -12,6 +12,7 @@ import json
 import uuid
 from django.conf import settings
 from models import FileInfo, Question
+from dwebsocket import require_websocket
 
 # Create your views here.
 """
@@ -61,13 +62,12 @@ def handle_uploaded_file(f):
 @csrf_exempt
 def get_page(request):
     # user = request.user
-    file_name = 'file_name_2.csv'
+    file_name = 'eggs.csv'
     file_size = 22000
-    hash_str = '5eef0c399c75b1afbbafc5011be141f2' # 文件特征值
+    hash_str = '5c2bcdd6e86d4bcfa668d163ba7345d2' # 文件特征值
     offset_size = 123
     # 暂时都是上传新的文件
     offset_size = 0
-    DATA_BASE_DIR = '/var/temp/bdpdata/user_5'
     file_folder = settings.EXECL_TMP_FILE_DIR.format("user_" + str(2))
     # 判断用户的磁盘大小
     # total_space = user.user_level.max_total_size
@@ -83,6 +83,7 @@ def get_page(request):
         return return_data
     file = request.FILES.get('csv_file')
     temp_file_path = settings.EXECL_TMP_FILE_DIR.format("user_" + str(2))
+    print "oooooooooo"
     if file_name.endswith('.csv'):
         csv_coding = 'gbk'
         try:
@@ -92,6 +93,7 @@ def get_page(request):
             header = reader.next()
             header = [h.decode(csv_coding) for h in header]
         except Exception as e:
+            print "ccccccc"
             context = {
                 "return_code": 5,
                 "message": u"上传文件错误,文件格式错误"
@@ -129,7 +131,7 @@ def get_page(request):
             "message": u"上传文件未完成",
             "data": {"file_id": file_info.id}
         }
-    return context
+    return HttpResponse("success")
 
 
 class _Upload(object):
@@ -198,3 +200,48 @@ def create_question(request):
     t = datetime.datetime.now()
     Question.objects.create(question_text=question_text, pub_date=t)
     return HttpResponse({"status": 0})
+
+
+@require_websocket
+def echo_once(request):
+    message = request.websocket.wait()
+    request.websocket.send(message)
+
+
+
+from store_user.models import UserInfo
+from dwebsocket import require_websocket, accept_websocket
+
+room = common.RoomServer()
+
+def _who_is_login(req):
+    '''
+    return login user or None if not found
+    '''
+    uid = req.session.get('uid', None)
+    if uid:
+        users = UserInfo.manager.filter(pk=uid)
+        if len(users) == 1:
+            return users[0]
+    else:
+        return None
+
+@require_websocket
+def ws(req):
+    user = _who_is_login(req)
+    # 获得 ws 对象
+    ws = req.websocket
+    # 获得 sid 作为 键存储
+    sid = req.session.session_key
+    ctx = room.get_ctx(sid)
+    if ctx:
+        room.update(sid, user, ws)
+    else:
+        room.add_user_broadcast(sid, user, ws)
+    # 接受消息
+    for raw_msg in ws:
+        if raw_msg:
+            room.handle_msg(user, raw_msg)
+    # 断开连接 向所有用户发送广播
+    room.remove_user_broadcast(sid)
+    

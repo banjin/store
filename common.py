@@ -362,6 +362,119 @@ def gg():
             print(row)
             spamwriter.writerow(row + [row[0] + row[1]])
 
+
+class RoomServer:
+    '''msg:
+    ADD:to_name:from_name:msg:data_type
+    DEL:to_name:from_name:msg:data_type
+    SEND:to_name:from_name:msg:data_type
+    data_type:[utf8, ...]
+    '''
+
+    def __init__(self):
+        '''
+        {
+            sessionid:{
+                user: user,
+                ws: ws
+            },
+            sessionid:{
+                user: user,
+                ws: ws
+            },
+            ...
+        }
+        使用字典来存储 ws 方便检索, 键值是 sessionid
+        '''
+        self.online = dict()
+
+    def get_all_users(self):
+        '''
+        return unique_users
+        '''
+        users = [i['user'] for i in self.online.values()]
+        unique_users = set(users)
+        return unique_users
+
+    def update(self, sid, user, ws):
+        self.online[sid] = dict(user=user, ws=ws)
+
+    def get_ctx(self, sid):
+        '''
+        return (user, ws) / none
+        '''
+        return self.online.get(sid, None)
+
+    def del_ctx(self, sid):
+        '''删除在线用户'''
+        try:
+            del self.online[sid]
+        except:
+            print('WARN', sid, 'not in the online list')
+
+    def add_user_broadcast(self, sid, user, ws):
+        '''添加用户并向在线用户广播'''
+        self.update(sid, user, ws)
+        raw_msg = 'ADD::{from_}:{from_}:utf8'.format(from_=user.name)
+        self._send(raw_msg)
+
+    def remove_user_broadcast(self, sid):
+        '''
+        广播删除用户 并删除用户
+        如果没找到, 打印异常
+        '''
+        ctx = self.get_ctx(sid)
+        if ctx:
+            raw_msg = 'DEL::{from_}:{from_}:utf8'.format(from_=ctx['user'].name)
+            self.del_ctx(sid)
+            self._send(raw_msg)
+        else:
+            print('WARN', sid, 'not in the online list')
+
+    def send_msg(self, sid, msg, to=None):
+        '''
+        to 默认是 None 向所有在线用户发送消息
+        '''
+        ctx = self.get_ctx(sid)
+        if ctx:
+            raw_msg = 'SEND:{to}:{from_}:{msg}:utf8'.format(to=to, from_=ctx['user'].name, msg=msg)
+        self._send(msg, to=to)
+
+    def handle_msg(self, from_user, raw_msg):
+        '''处理接受的数据'''
+        raw_msg = raw_msg.decode('utf-8')
+        print(raw_msg)
+        option, to, from_, msg, type_ = raw_msg.split(':')
+        if option == 'SEND':
+            to_name = to if to else None
+            self._send(raw_msg, name=to_name)
+        else:
+            print('WARN: unknown option {}'.format(option))
+
+    def _send(self, raw_msg, name=None):
+        '''
+        raw_msg 是包装以后的消息
+        name 默认是 None 向所有在线用户发送消息
+        '''
+        to_sid = []
+        if name:
+            for k, v in self.online.items():
+                if v['user'].name == name:
+                    to_sid.append(k)
+        else:
+            to_sid = self.online.keys()
+        del_sid = []
+        # 发送失败, 从列表里面删除该用户
+        for i in to_sid:
+            ws = self.online[i]['ws']
+            try:
+                ws.send(raw_msg.encode('utf-8'))
+            except:
+                del_sid.append(i)
+        print(to_sid, del_sid)
+        for i in del_sid:
+            self.remove_user_broadcast(i)
+
 if __name__ == '__main__':
     # t_warps()
     # p = Pizza(55)
@@ -378,7 +491,7 @@ if __name__ == '__main__':
     # md5_file('/Users/songhaiming/Downloads/测试版本三配置管理.xls')
     # 5eef0c399c75b1afbbafc5011be141f3
 
-    # md5sum('servers_template(1).csv')
+    md5sum('eggs2.csv')
     # import os
     # print os.stat('stocks6.xlsx').st_size
     # table_append('/Users/songhaiming/Downloads/servers_template.csv')
@@ -391,4 +504,4 @@ if __name__ == '__main__':
     # g = ','.join(f)
     # print g
 
-    gg()
+    # gg()

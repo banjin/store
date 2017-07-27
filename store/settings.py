@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'book',
-    'rest_framework',
+    # 'rest_framework',
     'store_user',
     'store',
 )
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'store.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['html/'],
+        'DIRS': ['store/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,3 +116,6 @@ TMP_DIR = os.path.join('media','csv_template')
 EXECL_TMP_FILE_DIR = '/var/temp/temp/{0}'
 # 存储工作表对应的csv文件
 DATA_BASE_DIR = '/var/temp/bdpdata/{0}'
+
+WEBSOCKET_ACCEPT_ALL = True
+# WEBSOCKET_FACTORY_CLASS = 'dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory'

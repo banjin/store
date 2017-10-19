@@ -3,7 +3,8 @@ from django.conf.urls import *
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from dwebsocket.decorators import accept_websocket
-
+from django.http import HttpResponse
+import time
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
@@ -37,9 +38,6 @@ def echo(request):
             lock.release()
 
 
-from django.http import HttpResponse
-
-
 def modify_message(message):
     return message.lower()
 
@@ -47,10 +45,19 @@ def modify_message(message):
 @accept_websocket
 def lower_case(request):
     if not request.is_websocket():
+        print "xxxxxxxx"
+        print "request.......", request
         message = request.GET['message']
+        print "ccccc", message
         message = modify_message(message)
         return HttpResponse(message)
     else:
         for message in request.websocket:
+            print "dddd", message
             message = modify_message(message)
-            request.websocket.send(message)
+            i = 0
+            while 1:
+                i += 1
+                time.sleep(1)
+                request.websocket.send(message)
+

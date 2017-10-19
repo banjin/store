@@ -1,7 +1,7 @@
 # coding:utf-8
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import csv
 import codecs
@@ -13,6 +13,7 @@ import uuid
 from django.conf import settings
 from models import FileInfo, Question
 from dwebsocket import require_websocket
+from django.http import StreamingHttpResponse
 
 # Create your views here.
 """
@@ -61,8 +62,11 @@ def handle_uploaded_file(f):
 
 @csrf_exempt
 def get_page(request):
+    import time
+    start_time = time.time()
+    print "start_time..",start_time
     # user = request.user
-    file_name = 'eggs.csv'
+    file_name = 'eggs.xlsx'
     file_size = 22000
     hash_str = '5c2bcdd6e86d4bcfa668d163ba7345d2' # 文件特征值
     offset_size = 123
@@ -75,30 +79,37 @@ def get_page(request):
     total_space = 12345678
 
     upload_obj = _Upload(file_name, file_size, offset_size, hash_str, file_folder, total_space)
-    if not upload_obj.bool_save:
-        return_data = {
-            'return_code': 5,
-            'message': u'空间不足或者上传文件过大.'
-        }
-        return return_data
+
+    # if not upload_obj.bool_save:
+    #     return_data = {
+    #         'return_code': 5,
+    #         'message': u'空间不足或者上传文件过大.'
+    #     }
+    #     return JsonResponse(return_data)
+    print "DDDDD"
     file = request.FILES.get('csv_file')
     temp_file_path = settings.EXECL_TMP_FILE_DIR.format("user_" + str(2))
     print "oooooooooo"
+    print "ppppppppp....", os.path.splitext(file_name)[1]
     if file_name.endswith('.csv'):
         csv_coding = 'gbk'
         try:
             dialect = csv.Sniffer().sniff(codecs.EncodedFile(file, csv_coding).read(1024))
+            print "1"
             file.open()
             reader = csv.reader(codecs.EncodedFile(file, csv_coding), delimiter=str(','), dialect=dialect)
+            print "2"
             header = reader.next()
+            print "3"
             header = [h.decode(csv_coding) for h in header]
+            print "4"
         except Exception as e:
             print "ccccccc"
             context = {
                 "return_code": 5,
                 "message": u"上传文件错误,文件格式错误"
             }
-            return context
+            return JsonResponse(context)
     elif os.path.splitext(file_name)[1] in ['.xlsx', '.xlsm', '.xltx', '.xltm', '.xlsb', '.xlam']:
         pass
     else:
@@ -131,6 +142,9 @@ def get_page(request):
             "message": u"上传文件未完成",
             "data": {"file_id": file_info.id}
         }
+    end_time = time.time()
+    print "start_time..", end_time
+    print "cost_time...", end_time-start_time
     return HttpResponse("success")
 
 
@@ -244,4 +258,53 @@ def ws(req):
             room.handle_msg(user, raw_msg)
     # 断开连接 向所有用户发送广播
     room.remove_user_broadcast(sid)
-    
+
+
+def down_work_table(request):
+    """
+    下载工作表
+    :param request:
+    :return:
+    """
+    user = request.user
+    # form = forms.DownWorkTableForm(getattr(request, request.method))
+    # if not form.is_valid():
+    #     return_data = {
+    #         'return_code': 3,
+    #         'message': u'参数错误。'
+    #     }
+    #     return return_data
+    # cld = form.cleaned_data
+    #
+    # work_table_ids = cld['work_table_ids']
+    # work_table_id_list = work_table_ids.split(',')
+    #
+    # work_table_set = WorkTable.objects.filter(id__in=work_table_id_list).values("work_table_uuid", "work_table_rename")
+    #
+    # # file_dir = settings.WORKTABLE_TEMPLATE_PATH + "user_{}/".format(user.id)
+    work_table_set = [{"work_table_uuid":"42bc23ae_9abf_11e7_8cda_f45c89a97b13.csv","work_table_rename":"change_work_table_name"}]
+    file_dir = '/data/test_django/store/user_2/'
+    for work_table in work_table_set:
+        file_path = os.path.join(file_dir, work_table['work_table_uuid'])
+
+        def file_iterator(file_name, chunk_size=512):
+            with open(file_name, 'rb') as f:
+                while True:
+                    c = f.read(chunk_size)
+                    if c:
+                        yield c
+                    else:
+                        break
+
+        the_file_name = work_table['work_table_rename'] + ".csv"
+        response = StreamingHttpResponse(file_iterator(file_path))
+        response['Content-Type'] = 'application/octet-stream'
+        response.write(codecs.BOM_UTF8)  # 加入BOM头才能在csv文件中添加中文，否则在excel中是乱码，此句必须加在下句的前
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+
+        # response = StreamingHttpResponse("文件不存在！")
+        # response['Content-Type'] = 'application/octet-stream'
+        # response['Content-Disposition'] = 'attachment;filename="{0}"'.format("")
+        # return response
+
+        return response

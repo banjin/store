@@ -14,8 +14,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from book.views import get_page
-from .views import echo, base_view,lower_case
+from book.views import get_page, down_work_table
+from .views import base_view, lower_case
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^book/', include('book.urls')),
     url(r'^user/', include('store_user.urls')),
     url(r'^lower_case$', lower_case),
-    url(r'^echo$', echo),
+    url(r'^down/$', down_work_table),
+    # url(r'^echo$', echo),
     url(r'^$', base_view),
     # url(r'^user/', include(store_user.urls)),
 ]

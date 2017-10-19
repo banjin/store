@@ -58,3 +58,43 @@ class FileInfo(models.Model):
     user = models.ForeignKey(User)
     hash_key = models.CharField(max_length=128)
     file_name_uuid = models.CharField(max_length=64, null=True)
+
+    class AppInfo(models.Model):
+        """
+        流量监控,统计每个协议的流量
+        """
+        # 设备编号，在探针系统的界面上可以找到，位置：系统维护 -》设备编号
+        devid = models.IntegerField(null=True)
+        # 协议编号，可以在下面的palog.config表中查询
+        apid = models.IntegerField(null=True)
+        # 这条记录采集的时间，探针的时间
+        time = models.BigIntegerField(null=True)
+        # 记录采集的间隔
+        inter = models.IntegerField(null=True)
+        # 协议的连接数
+        app_flowcont = models.IntegerField(null=True)
+        # 上行流量
+        app_upbytes = models.BigIntegerField(null=True)
+        # 下行流量
+        app_downbytes = models.BigIntegerField(null=True)
+        # 链路的编号，分0，1，2，3，4，5，6，7，8，9其中0是监控模式，1-4为网桥，6-9为虚拟链路
+        linkid = models.IntegerField(null=True)
+
+        class Meta:
+            db_table = 'app_info'
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+

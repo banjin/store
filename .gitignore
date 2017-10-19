@@ -1,3 +1,10 @@
 .idea/
 
 venv/
+
+*.csv
+*.log
+.DS_Store
+*.pyc
+do*
+cp*

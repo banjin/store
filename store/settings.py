@@ -119,3 +119,5 @@ DATA_BASE_DIR = '/var/temp/bdpdata/{0}'
 
 WEBSOCKET_ACCEPT_ALL = True
 # WEBSOCKET_FACTORY_CLASS = 'dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory'
+
+from local_settings import *

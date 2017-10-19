@@ -2,6 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App'
 import VueResource from 'vue-resource'
+import VueWebsocket from "vue-websocket"
+import VueUploader from "vue-uploader"
+Vue.use(VueWebsocket)
 
 Vue.use(VueResource)
 Vue.use(VueRouter)

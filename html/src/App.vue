@@ -32,7 +32,7 @@
           <i class="glyphicon glyphicon-folder-close"></i>选择文件
           <div class="form-group d-none">
             <form enctype="multipart/form-data" method="post">
-              <input id="fileUploadFile" type="file" @change="bindFile" class="form-control">
+              <input id="fileUploadFile" type="file" @change="bindFile" class="form-control" multiple="">
             </form>
           </div>
         </span>
@@ -40,6 +40,15 @@
       </div>
       <div style="width:580px;" class="m-t-20">
         <p class="fRight"><button class="ys-btn" @click="uploadThisFile">确认添加</button></p>
+         <button @click="down_table">下载</button>
+      </div>
+      <br>
+      <br/>
+      <a href="change_work_table_name.csv" download="">下载</a>
+      <div id="websocket">
+        <p>{{ message }}</p>
+        <input v-model="message">
+        <button v-on:click="reverseMessage">Reverse Message</button>
       </div>
     </template>
 
@@ -53,6 +62,9 @@ export default ({
       return {
         fileUploadFormData:new FormData(),//文件上传
         fileName:"",
+        message:'HELLO',
+        ws: null,
+        work_table_id:0
       }
     },
   methods: {
@@ -64,6 +76,26 @@ export default ({
         this.fileUploadFormData.append('csv_file', e.target.files[0]);
         this.fileName=e.target.files[0].name;
       },
+    down_table(){
+      this.$http.post('/down/').then(function (response) {
+        if (response.status == 200) {
+          console.log('下载成功')
+          this.$root.alertSuccess = true;
+      }
+    });
+    },
+    reverseMessage(){
+		  		// Emit the server side
+          var ws = new WebSocket("ws://" + '127.0.0.1:8000' + "/lower_case");
+          console.log('WebSocket open');
+          window.s = ws
+          window.s.send(this.message);
+//		  		this.$socket.emit("add", { a: 5, b: 3 });
+			},
+    add() {
+		  		// Emit the server side
+		  		this.$socket.emit("add", { a: 5, b: 3 });
+			},
     uploadThisFile(e){
       e.preventDefault();
       if (this.fileUploadFormData.file == undefined) this.fileUploadFormData.append('file', '');
@@ -80,7 +112,39 @@ export default ({
       }, function (data) {
         //error handling here
       });
-    }
+    },
+    socket: {
+			// Prefix for event names
+			// prefix: "/counter/",
+
+			// If you set `namespace`, it will create a new socket connection to the namespace instead of `/`
+			// namespace: "/counter",
+
+			events: {
+
+				// Similar as this.$socket.on("changed", (msg) => { ... });
+				// If you set `prefix` to `/counter/`, the event name will be `/counter/changed`
+				//
+				changed(msg) {
+					console.log("Something changed: " + msg);
+				}
+
+				/* common socket.io events
+				connect() {
+					console.log("Websocket connected to " + this.$socket.nsp);
+				},
+
+				disconnect() {
+					console.log("Websocket disconnected from " + this.$socket.nsp);
+				},
+
+				error(err) {
+					console.error("Websocket error!", err);
+				}
+				*/
+
+			}
+		}
   },
   components:
    {
